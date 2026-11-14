@@ -13,7 +13,7 @@ Tablero interactivo y autocontenido (`index.html`) de mapas coropléticos de den
 | Gráfico N° 01 | Mapa de calor provincia × mes frente al promedio mensual de cada provincia |
 | Mapa N° 05 | Calidad de la georreferenciación por provincia |
 
-Categorías: total, violencia contra la mujer e integrantes del grupo familiar, patrimonio, robo, hurto, extorsión, estafa, lesiones, violación de la libertad sexual y delitos informáticos. Botón de tema **claro/oscuro** (respeta la preferencia del sistema y recuerda la elección en el navegador). Los filtros quedan en el enlace (`#cat=...&nivel=...`).
+Categorías: total, violencia contra la mujer e integrantes del grupo familiar, patrimonio, robo, hurto, extorsión, estafa, lesiones, violación de la libertad sexual y delitos informáticos. Botón **🔊 Escuchar**: lee en voz alta, en español, el resumen, los indicadores y cada mapa con los filtros elegidos, resaltando la sección que se está leyendo (usa la síntesis de voz del navegador). Botón de tema **claro/oscuro** (respeta la preferencia del sistema y recuerda la elección en el navegador). Los filtros quedan en el enlace (`#cat=...&nivel=...`).
 
 ## Publicación en GitHub Pages
 Subir el contenido de esta carpeta (`index.html`, `README.md`, `.nojekyll` y `scripts/`) a un repositorio (p. ej. `goodguysinsight/tablero_sidpol`) y activar **Settings → Pages → Deploy from a branch → main / (root)**.

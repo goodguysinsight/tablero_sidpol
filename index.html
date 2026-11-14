@@ -31,6 +31,11 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:"Mont
   border:1px solid var(--color-border-line);border-radius:9px;padding:6px 10px;cursor:pointer;max-width:100%}
 .gg-theme{margin-left:auto;align-self:flex-start;flex:none;font:inherit;font-size:.72rem;font-weight:600;color:var(--color-fg);
   background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:9px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.gg-acciones{margin-left:auto;align-self:flex-start;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.gg-acciones .gg-theme{margin-left:0}
+.gg-leer[aria-pressed="true"]{background:var(--gg-brand);border-color:var(--gg-brand);color:#fff}
+.gg-leyendo{outline:3px solid var(--gg-accent);outline-offset:4px;border-radius:12px;transition:outline-color .2s}
+@media (max-width:600px){.gg-acciones{margin-left:0;justify-content:flex-start}}
 .dash-skeleton{min-height:120px;border-radius:9px;background:linear-gradient(90deg,var(--color-border-line),transparent,var(--color-border-line));opacity:.5}
 @media (max-width:600px){.gg-brandrow{flex-wrap:wrap}.gg-theme{margin-left:0}}
 
@@ -100,6 +105,20 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:"Mont
 .gg-foot b { color: var(--gg-brand); }
 @media (max-width: 600px) { .gg-logo { width: 44px; height: 44px; } .sid-title { font-size: 1.15rem; } .sid-sec { padding: var(--cds-pad-md); } }
 [data-dash-source-state=refreshing] { opacity: .5; }
+
+/* Tema claro / oscuro elegido con el botón del encabezado */
+.gg-theme { margin-left: auto; align-self: flex-start; flex: none; font: inherit; font-size: .72rem; font-weight: 600; color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 9px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+.gg-theme:hover { border-color: var(--gg-brand); }
+.gg-theme:focus-visible { outline: 2px solid var(--gg-accent); outline-offset: 2px; }
+.sid.gg-oscuro { --color-bg: #0e141b; --color-panel: #151e28; --color-fg: #eaf1f8; --color-fg-muted: #9fb0c0; --color-border-line: #2a3947;
+  --cds-surface-popover: #1d2a37; --cds-border: #2a3947; --cds-text-secondary: #c3d0dc;
+  --gg-brand: #4aa3e6; --gg-brand2: #44c6b8; --gg-accent: #ffcf3f; --gg-nodata: #2c3a48; color-scheme: dark; }
+.sid.gg-claro { --color-bg: #f4f6f9; --color-panel: #ffffff; --color-fg: #15212e; --color-fg-muted: #5b6b7c; --color-border-line: #dbe3ec;
+  --cds-surface-popover: #ffffff; --cds-border: #dbe3ec; --cds-text-secondary: #3c4a59;
+  --gg-brand: #0056a1; --gg-brand2: #33b3a9; --gg-accent: #f8bd13; --gg-nodata: #c7cfd8; color-scheme: light; }
+.sid.gg-oscuro, .sid.gg-claro { background: var(--color-bg); color: var(--color-fg); padding: var(--cds-pad-lg); border-radius: 12px; }
+.sid.gg-oscuro .dash-select, .sid.gg-claro .dash-select { background-color: var(--color-panel); color: var(--color-fg); border: 1px solid var(--color-border-line); }
+@media (max-width: 600px) { .gg-brandrow { flex-wrap: wrap; } .gg-theme { margin-left: 0; } }
 </style>
 </head>
 <body>
@@ -114,7 +133,10 @@ body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:"Mont
       <h1 class="sid-title">Denuncias policiales en la Macrorregión Norte</h1>
       <p class="sid-sub">Áncash, Cajamarca, La Libertad, Lambayeque, Piura y Tumbes · denuncias únicas · Elaboración: Good Guys Insight</p>
     </div>
-    <button class="gg-theme" id="gg-theme" type="button" aria-label="Cambiar tema">◐ Modo oscuro</button>
+    <div class="gg-acciones">
+      <button class="gg-theme gg-leer" id="gg-leer" type="button" aria-label="Escuchar el resumen del tablero">🔊 Escuchar</button>
+      <button class="gg-theme" id="gg-theme" type="button" aria-label="Cambiar tema">◐ Modo oscuro</button>
+    </div>
   </div>
   <p class="sid-takeaway" id="resumen">
     <b data-draw="kpi" data-fmt="tc" data-source="kpi" data-field="dep_max" data-row="0">—</b> registra la tasa más alta de la macrorregión, con
@@ -521,6 +543,37 @@ dash.onData(() => {
 });
 
 // ---------------------------------------------------------------------
+// Tema claro / oscuro (botón del encabezado)
+// Sin elección, sigue el tema de quien abre el tablero; el botón lo fija.
+// ---------------------------------------------------------------------
+{
+  const raiz = document.querySelector('.sid');
+  const esOscuro = () => {
+    if (!raiz) return false;
+    if (raiz.classList.contains('gg-oscuro')) return true;
+    if (raiz.classList.contains('gg-claro')) return false;
+    const rgb = (getComputedStyle(raiz).color.match(/\d+(\.\d+)?/g) || [0, 0, 0]).map(Number);
+    return (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) > 140;   // texto claro = fondo oscuro
+  };
+  const pintar = () => {
+    const osc = esOscuro();
+    document.querySelectorAll('.gg-t-oscuro').forEach((e) => { e.hidden = osc; });
+    document.querySelectorAll('.gg-t-claro').forEach((e) => { e.hidden = !osc; });
+    document.querySelectorAll('#gg-tema').forEach((b) => b.setAttribute('aria-pressed', String(osc)));
+  };
+  document.querySelectorAll('#gg-tema').forEach((b) => {
+    b.addEventListener('click', () => {
+      if (!raiz) return;
+      const osc = esOscuro();
+      raiz.classList.remove('gg-oscuro', 'gg-claro');
+      raiz.classList.add(osc ? 'gg-claro' : 'gg-oscuro');
+      pintar();
+    });
+  });
+  pintar();
+}
+
+// ---------------------------------------------------------------------
 // 1. Coroplético de tasas
 // ---------------------------------------------------------------------
 const COLOR_CERO = 'var(--gg-nodata)';
@@ -842,6 +895,72 @@ dash.draw('mapa-cal', (el) => {
   pintar();
 })();
 window.SID_RENDER();
+</script>
+<script>
+(function(){
+  const b = document.getElementById('gg-leer'); if (!b) return;
+  const voz = window.speechSynthesis;
+  if (!voz || typeof SpeechSynthesisUtterance === 'undefined') { b.disabled = true; b.title = 'Este navegador no permite la lectura en voz alta'; return; }
+  // Números para la voz: 168,211 -> 168211 ; 4,022.3 -> 4022 coma 3 ; 20.8% -> 20 coma 8 por ciento
+  const hablar = (t) => String(t)
+    .replace(/(\d),(?=\d{3}\b)/g, '$1')
+    .replace(/(\d)\.(\d)/g, '$1 coma $2')
+    .replace(/%/g, ' por ciento').replace(/\bhab\./g, 'habitantes').replace(/\.\s*\./g, '.')
+    .replace(/ · /g, '. ').replace(/–/g, ' a ').replace(/×/g, ' por ')
+    .replace(/Gi\*/g, 'G i estrella').replace(/N° 0?/g, 'número ')
+    .replace(/\s+/g, ' ').trim();
+  const txt = (sel, raiz) => { const e = (raiz || document).querySelector(sel); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
+  // Arma los bloques que se leen: [elemento a resaltar, texto]
+  function bloques(){
+    const out = [];
+    out.push([document.querySelector('#encabezado'), txt('.sid-title') + '. ' + txt('.sid-sub') + '. ' + txt('#resumen')]);
+    const k = [...document.querySelectorAll('.sid-card')].map(c => txt('.sid-card-l', c) + ': ' + txt('.sid-card-v', c) + '. ' + txt('.sid-card-n', c));
+    out.push([document.querySelector('#indicadores'), 'Indicadores principales. ' + k.join('. ')]);
+    document.querySelectorAll('.sid-sec').forEach(sec => {
+      let t = txt('.gg-eyebrow', sec) + '. ' + txt('.sid-h2', sec) + '. ' + txt('.sid-desc', sec) + ' ' + txt('.sid-note', sec) + '.';
+      if (sec.id === 'tasas') {
+        const filas = [...sec.querySelectorAll('tbody tr')].slice(0, 3).map(tr => { const td = tr.querySelectorAll('td'); return td[0].textContent + ', con ' + td[4].textContent + ' denuncias por cada 100,000 habitantes'; });
+        if (filas.length) t += ' Los tres ámbitos con mayor tasa son: ' + filas.join('; ') + '.';
+      }
+      if (sec.id === 'bivariado' || sec.id === 'puntos-calientes') {
+        const leg = [...sec.querySelectorAll('.sid-bivleg > div > div, .sid-li span:last-child')].map(e => e.textContent).filter(Boolean);
+        if (leg.length) t += ' ' + leg.join('. ') + '.';
+      }
+      out.push([sec, t]);
+    });
+    out.push([document.querySelector('#pie'), txt('#pie')]);
+    return out.filter(x => x[1]);
+  }
+  window.SID_TEXTO_LECTURA = () => bloques().map(x => hablar(x[1]));
+  let activo = false, marcado = null;
+  const elegirVoz = () => {
+    const vs = voz.getVoices().filter(v => /^es/i.test(v.lang));
+    const pref = ['es-PE', 'es-419', 'es-US', 'es-MX', 'es-CO', 'es-CL', 'es-AR', 'es-ES'];
+    for (const l of pref) { const v = vs.find(x => x.lang.replace('_', '-') === l); if (v) return v; }
+    return vs[0] || null;
+  };
+  const marcar = (el) => { if (marcado) marcado.classList.remove('gg-leyendo'); marcado = el; if (el) { el.classList.add('gg-leyendo'); el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); } };
+  const detener = () => { activo = false; voz.cancel(); marcar(null); b.setAttribute('aria-pressed', 'false'); b.textContent = '🔊 Escuchar'; };
+  b.addEventListener('click', () => {
+    if (activo) { detener(); return; }
+    activo = true; b.setAttribute('aria-pressed', 'true'); b.textContent = '⏹ Detener';
+    const v = elegirVoz();
+    const cola = bloques();
+    cola.forEach(([el, t], i) => {
+      // Frases cortas: algunos navegadores cortan textos largos
+      const frases = hablar(t).match(/[^.;:]+[.;:]?/g) || [];
+      frases.forEach((f, j) => {
+        const u = new SpeechSynthesisUtterance(f.trim());
+        u.lang = v ? v.lang : 'es-PE'; if (v) u.voice = v; u.rate = 1;
+        if (j === 0) u.onstart = () => { if (activo) marcar(el); };
+        if (i === cola.length - 1 && j === frases.length - 1) u.onend = () => { if (activo) detener(); };
+        voz.speak(u);
+      });
+    });
+  });
+  if (voz.onvoiceschanged !== undefined) voz.onvoiceschanged = () => {};
+  window.addEventListener('beforeunload', () => voz.cancel());
+})();
 </script>
 </body>
 </html>
