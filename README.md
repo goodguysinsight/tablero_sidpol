@@ -20,14 +20,14 @@ Subir el contenido de esta carpeta (`index.html`, `README.md`, `.nojekyll` y `sc
 
 ## Regenerar
 ```
-python scripts/procesar_sidpol_tablero.py SIDPOL.csv DISTRITOS/DISTRITOS.shp out
+python scripts/procesar_sidpol_tablero.py SIDPOL.csv DISTRITOS/DISTRITOS.shp out "Consulta de población por Sexo, según nivel Distrital.xlsx"
 ```
 El script cuenta denuncias únicas (`ID_DGC`) por ubigeo del hecho y categoría, calcula tasas, Bayes empírico, cociente de localización, Gi* y terciles bivariados, y simplifica las geometrías. Requiere pandas, geopandas, libpysal y esda.
 
 ## Notas
 - Unidad: denuncia única (`ID_DGC`); un registro del SIDPOL es una combinación de denuncia, persona y modalidad.
 - Ubicación por ubigeo del distrito del hecho: la mayoría de coordenadas está forzada al centroide de la comisaría.
-- Población: Censo de Población y Vivienda 2017 (capa distrital INEI); puede sobrestimar tasas donde la población creció.
+- Población: Censos Nacionales 2025 (INEI), consulta de población por sexo según nivel distrital. Alto Trujillo (130112) se suma a El Porvenir (130102), ubigeo con el que el SIDPOL registra sus denuncias.
 - Las denuncias reflejan hechos reportados a la policía, no la incidencia real del delito.
 
 ## Enlace
